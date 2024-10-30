@@ -61,6 +61,7 @@ private:
 	PlayerPaddle* playerPaddle;
 	EnemyPaddle* enemyPaddle;
 	Ball* ball;
+	Ball* debugBall;
 	MainMenu* Menu;
 	sf::Font font;
 	sf::Text score[2];
@@ -91,6 +92,8 @@ public:
 	sf::Vector2f getBallDirection();
 	sf::RenderWindow& getWindow();
 	sf::Vector2i getScore();
+	Ball& getBall();
+	void setBallPos(float a, float b);
 
 
 	//Functions

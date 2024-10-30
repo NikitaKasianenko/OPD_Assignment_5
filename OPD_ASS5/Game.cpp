@@ -122,11 +122,19 @@ void Game::InitBall()
 
 	this->ball = new Ball(this);
 
+	debugBall = new Ball(this);
+
 	this->ball->shape.setSize(sf::Vector2f(35.f, 35.f));
 	this->ball->shape.setPosition(playerPaddle->paddle_shape.getPosition().x + playerPaddle->paddle_shape.getSize().x + 20.f, playerPaddle->paddle_shape.getPosition().y - ball->shape.getSize().x / 2.f + playerPaddle->paddle_shape.getSize().y / 2.f);
 	this->ball->shape.setFillColor(sf::Color::Cyan);
 	this->ball->shape.setOutlineColor(sf::Color::Green);
 	this->ball->shape.setOutlineThickness(1.f);
+
+	this->debugBall->shape.setSize(sf::Vector2f(35.f, 35.f));
+	this->debugBall->shape.setPosition(playerPaddle->paddle_shape.getPosition().x + playerPaddle->paddle_shape.getSize().x + 20.f, playerPaddle->paddle_shape.getPosition().y - ball->shape.getSize().x / 2.f + playerPaddle->paddle_shape.getSize().y / 2.f);
+	this->debugBall->shape.setFillColor(sf::Color::Transparent);
+	this->debugBall->shape.setOutlineColor(sf::Color::Red);
+	this->debugBall->shape.setOutlineThickness(5.f);
 
 
 
@@ -224,6 +232,16 @@ sf::Vector2i Game::getScore()
 	return points;
 }
 
+Ball& Game::getBall()
+{
+	return *debugBall;
+}
+
+void Game::setBallPos(float a, float b)
+{
+	this->debugBall->shape.setPosition(a, b);
+}
+
 
 //functions
 
@@ -231,7 +249,7 @@ void Game::checkCollision()
 {
 
 	if (ball->shape.getGlobalBounds().intersects(enemyPaddle->paddle_shape.getGlobalBounds()) && lastTouch) {
-		ballSpeed *= 1.05f;
+		//ballSpeed *= 1.05f;
 		float paddleCentre = enemyPaddle->paddle_shape.getPosition().y + enemyPaddle->paddle_shape.getSize().y / 2.f;
 		float ballCentre = ball->shape.getPosition().y + ball->shape.getSize().y / 2.f;
 
@@ -244,7 +262,7 @@ void Game::checkCollision()
 	}
 
 	if (ball->shape.getGlobalBounds().intersects(playerPaddle->paddle_shape.getGlobalBounds()) && !lastTouch) {
-		ballSpeed *= 1.05f;
+		//ballSpeed *= 1.05f;
 		float paddleCentre = playerPaddle->paddle_shape.getPosition().y + playerPaddle->paddle_shape.getSize().y / 2.f;
 		float ballCentre = ball->shape.getPosition().y + ball->shape.getSize().y / 2.f;
 
@@ -476,6 +494,10 @@ void Game::updatePaddle()
 void Game::updateBall()
 {
 	ball->move();
+	debugBall->direction.x = ball->direction.x;
+	debugBall->direction.y = ball->direction.y;
+	debugBall->move();
+
 	checkCollision();
 
 }
@@ -520,6 +542,7 @@ void Game::render()
 		this->renderEnemies();
 		this->window->draw(playerPaddle->paddle_shape);
 		this->window->draw(ball->shape);
+		this->window->draw(debugBall->shape);
 		for (auto& h : score) {
 			this->window->draw(h);
 		}
