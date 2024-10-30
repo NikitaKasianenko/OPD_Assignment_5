@@ -33,9 +33,14 @@ private:
 	sf::Vector2i points; //x is player; y is enemy;
 	bool play;
 	bool start;
-	bool fullscreen;
-	int fps = 60;
+	bool end = false;
+	bool fullscreen = false;
 	bool twoPlayers = false;
+
+	int pointsTOwin = 3;
+
+	int fps = 60;
+
 	
 
 	//collision
@@ -70,6 +75,7 @@ private:
 
 	void InitScore();
 	void InitMenu();
+	void restart(Game* object);
 
 public:
 
@@ -84,6 +90,7 @@ public:
 	sf::Vector2f getBallSize();
 	sf::Vector2f getBallDirection();
 	sf::RenderWindow& getWindow();
+	sf::Vector2i getScore();
 
 
 	//Functions
@@ -94,6 +101,8 @@ public:
 
 	void pollEvents();
 	void mainMenu();
+	void endGameMenu();
+	void resetGame();
 
 	void updateEnemies();
 	void updatePaddle();
@@ -102,7 +111,6 @@ public:
 	void update();
 	
 	
-
 	void render();
 	void renderEnemies();
 

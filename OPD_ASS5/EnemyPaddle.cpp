@@ -12,14 +12,24 @@ void EnemyPaddle::move_paddle(int param, int dir)
 
 		if (game->getBallPositoin().x >= game->getVideoMode().width / 5.f) {
 
+
 			sf::Vector2f ballPos = game->getBallPositoin();
 			sf::Vector2f ballDir = game->getBallDirection();
-			float futurePos = ballPos.y + ballDir.y * 4;
+
 			float ballCenter = (game->getBallPositoin().y + game->getBallSize().y / 2.f);
 			float EnemyCenter = paddle_shape.getPosition().y + paddle_shape.getSize().y / 2.f;
+			float time = (ballCenter - EnemyCenter) / ballDir.y;
 
+			//float futurePos = ballPos.y + ballDir.y * 4;
+			float futurePos = ballPos.y + ballDir.y * time;
+			if (futurePos < 0) {
+				futurePos = futurePos - game->getBallSize().y;
+			}
+			else {
+				futurePos = futurePos + game->getBallSize().y;
+			}
 			float moveTo = futurePos - EnemyCenter;
-			if (std::abs(moveTo) > 25.f) {
+			if (std::abs(moveTo) > 20.f) {
 				if (moveTo < 0) {
 					direction.y = -speed;
 

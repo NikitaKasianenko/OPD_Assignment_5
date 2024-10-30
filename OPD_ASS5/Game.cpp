@@ -5,7 +5,7 @@
 
 
 
-void Game::initVariables()
+void Game::initVariables ()
 {
 
 	if (this->fps == 60) {
@@ -25,12 +25,7 @@ void Game::initVariables()
 	}
 
 
-	if (!this->enemyPaddle) {
-		this->enemyPaddle = new EnemyPaddle(this, paddleSpeed);
 	
-	}
-	this->enemyPaddle->direction.x = 0;
-	this->enemyPaddle->direction.y = 0;
 
 
 	if (!this->playerPaddle) {
@@ -79,6 +74,15 @@ void Game::InitWindow()
 void Game::InitEnemies()
 
 {
+
+	if (this->enemyPaddle) {
+		delete this->enemyPaddle;
+	}
+
+	this->enemyPaddle = new EnemyPaddle(this, paddleSpeed);
+	
+	this->enemyPaddle->direction.x = 0;
+	this->enemyPaddle->direction.y = 0;
 	this->enemyPaddle->paddle_shape.setSize(sf::Vector2f(50.f, 150.f));
 	this->enemyPaddle->paddle_shape.setPosition(videoMode.width- enemyPaddle->paddle_shape.getSize().x, (videoMode.height/2.f- enemyPaddle->paddle_shape.getSize().y/2.f));
 	this->enemyPaddle->paddle_shape.setFillColor(sf::Color::Cyan);
@@ -89,6 +93,14 @@ void Game::InitEnemies()
 
 void Game::InitPaddle()
 {
+
+
+	if (this->playerPaddle) {
+		delete this->playerPaddle;
+	}
+
+	this->playerPaddle = new PlayerPaddle(this, paddleSpeed);
+
 	this->playerPaddle->paddle_shape.setPosition(0.f, (videoMode.height / 2.f - enemyPaddle->paddle_shape.getSize().y/ 2.f));
 	this->playerPaddle->paddle_shape.setSize(sf::Vector2f(50.f, 150.f));
 	this->playerPaddle->paddle_shape.setFillColor(sf::Color::Cyan);
@@ -98,6 +110,12 @@ void Game::InitPaddle()
 
 void Game::InitBall()
 {
+	if (this->ball) {
+		delete this->ball;
+	}
+
+	this->ball = new Ball(this);
+
 	this->ball->shape.setSize(sf::Vector2f(35.f, 35.f));
 	this->ball->shape.setPosition(playerPaddle->paddle_shape.getPosition().x + playerPaddle->paddle_shape.getSize().x + 20.f, playerPaddle->paddle_shape.getPosition().y - ball->shape.getSize().x / 2.f + playerPaddle->paddle_shape.getSize().y / 2.f);
 	this->ball->shape.setFillColor(sf::Color::Cyan);
@@ -114,6 +132,8 @@ void Game::InitScore()
 	if (!font.loadFromFile("arial.ttf")) {
 		// Handle error
 	}
+	points.x = 0;
+	points.y = 0;
 	score[0].setFont(font);
 	score[0].setFillColor(sf::Color::Green);
 	score[0].setString("0");
@@ -127,26 +147,35 @@ void Game::InitScore()
 
 void Game::InitMenu()
 {
-	delete this->Menu;
-	this->Menu = new MainMenu(window->getSize().x, window->getSize().y);
+	if (this->Menu) {
+		delete this->Menu;
+	}
+	this->Menu = new MainMenu(window->getSize().x, window->getSize().y,fullscreen);
 
+}
+
+void Game::restart(Game* object)
+{
+	object = new Game;
 }
 
 //constructor / deconstructor
 Game::Game()
 {
-	this->initVariables();
 	this->InitWindow();
 	this->InitMenu();
 	this->InitEnemies();
 	this->InitPaddle();
 	this->InitBall();
 	this->InitScore();
+	this->initVariables();
+
 }
 
 Game::~Game()
 {
 	delete this->window;
+	delete this->Menu;
 	delete this->enemyPaddle;
 	delete this->playerPaddle;
 	delete this->ball;
@@ -184,6 +213,11 @@ sf::RenderWindow& Game::getWindow()
 	return *window;
 }
 
+sf::Vector2i Game::getScore()
+{
+	return points;
+}
+
 
 //functions
 
@@ -191,7 +225,7 @@ void Game::checkCollision()
 {
 
 	if (ball->shape.getGlobalBounds().intersects(enemyPaddle->paddle_shape.getGlobalBounds()) && lastTouch) {
-		//ballSpeed *= 1.002f;
+		//ballSpeed *= 1.05f;
 		float paddleCentre = enemyPaddle->paddle_shape.getPosition().y + enemyPaddle->paddle_shape.getSize().y / 2.f;
 		float ballCentre = ball->shape.getPosition().y + ball->shape.getSize().y / 2.f;
 
@@ -204,7 +238,7 @@ void Game::checkCollision()
 	}
 
 	if (ball->shape.getGlobalBounds().intersects(playerPaddle->paddle_shape.getGlobalBounds()) && !lastTouch) {
-		//ballSpeed *= 1.002f;
+		//ballSpeed *= 1.05f;
 		float paddleCentre = playerPaddle->paddle_shape.getPosition().y + playerPaddle->paddle_shape.getSize().y / 2.f;
 		float ballCentre = ball->shape.getPosition().y + ball->shape.getSize().y / 2.f;
 
@@ -233,14 +267,19 @@ void Game::win()
 	if (ball->shape.getPosition().x < -5) {
 		points.y++;  // Enemy player score
 		std::cout << "Points: " << points.x << " : " << points.y << std::endl;
-		if (points.y == 5) {
-			
+		if (points.y == pointsTOwin) {
+			end = true;
+			play = false;
 		}
 		resetBall(1);
 	}
 	if (ball->shape.getPosition().x > videoMode.width + 5) {
 		points.x++;  // Player score
 		std::cout << "Points: " << points.x << " : " << points.y << std::endl;
+		if (points.x == pointsTOwin) {
+			end = true;
+			play = false;
+		}
 		resetBall(0);
 	}
 
@@ -269,13 +308,28 @@ void Game::pollEvents() {
             case sf::Event::KeyPressed:
                 switch (this->ev.key.code) {
                     case sf::Keyboard::W:
-                        Menu->MoveUp();
+						if (!play && !end) {
+							Menu->MoveUp();
+						}
+						if (end) {
+							Menu->MoveRigh();
+						}
                         break;
                     case sf::Keyboard::S:
-                        Menu->MoveDown();
-                        break;
+						if (!play && !end) {
+							Menu->MoveDown();
+						}
+						if (end) {
+							Menu->MoveLeft();
+						}
+						break;
                     case sf::Keyboard::Return:
-						mainMenu();
+						if (!play && !end) {
+							mainMenu();
+						}
+						if (end) {
+							endGameMenu();
+						}
                         break;
                     case sf::Keyboard::Escape:
                         window->close();
@@ -308,19 +362,50 @@ void Game::mainMenu()
 		break;
 	case 3:
 		Menu->toggleFullscreen();
-		fullscreen = Menu->isFullscreen();
+		fullscreen = !fullscreen;
 		InitWindow();
 		InitPaddle();
 		InitBall();
 		InitEnemies();
 		InitScore();
 		Menu->updateMenu(videoMode.width, videoMode.height);
+		Menu->updateEndMenu(videoMode.width, videoMode.height);
 		break;
 	case 4:
 		window->close();
 		break;
 	}
 }
+
+void Game::endGameMenu()
+{
+	switch (Menu->getPressedEndItem()) {
+	case 0:
+		std::cout << "Play button has been pressed" << std::endl;
+		end = false;
+		play = false;
+		start = false;
+		InitWindow();
+		InitMenu();
+		InitPaddle();
+		InitBall();
+		InitEnemies();
+		InitScore();
+		initVariables();
+		break;
+	case 1:
+		window->close();
+		break;
+
+	}
+}
+
+void Game::resetGame() {
+
+	return;
+}
+
+
 
 
 
@@ -396,9 +481,10 @@ void Game::update()
 		this->updateEnemies();
 		this->updateBall();
 		this->updatePaddle();
-		this->updateScore();
 		this->win();
 	}
+	this->updateScore();
+
 		
 
 
@@ -421,16 +507,25 @@ void Game::render()
 		this->renderEnemies();
 		this->window->draw(playerPaddle->paddle_shape);
 		this->window->draw(ball->shape);
-		for (auto& h: score) {
+		for (auto& h : score) {
 			this->window->draw(h);
 		}
 	}
+	else if (end) {
 
-	//display new frame
+		score[0].setPosition(sf::Vector2f(videoMode.width * 4 / 10, videoMode.height / 10));
+		score[1].setPosition(sf::Vector2f(videoMode.width * 6 / 10, videoMode.height / 10));
 
-	if (!play) {
-		Menu->draw(*window);
+		for (auto& h : score) {
+			this->window->draw(h);
+		}
+
+		Menu->drawEnd(*window); 
 	}
+	else {
+		Menu->draw(*window);  
+	}
+
 
 	this->window->display();
 }

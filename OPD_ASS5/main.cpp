@@ -11,10 +11,6 @@ using namespace std;
 int main() {
 
 
-
-	//Init srand
-	std::srand(static_cast<unsigned>(NULL));
-
 	//init game engine
 	Game game;
 	

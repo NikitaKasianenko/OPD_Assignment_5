@@ -11,7 +11,6 @@ public:
 
 	Ball(Game* g);
 	sf::RectangleShape shape;
-	
 	sf::Vector2i direction;
 	void move();
 
