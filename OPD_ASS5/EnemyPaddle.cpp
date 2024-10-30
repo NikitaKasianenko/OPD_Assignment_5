@@ -20,16 +20,11 @@ void EnemyPaddle::move_paddle(int param, int dir)
 			float EnemyCenter = paddle_shape.getPosition().y + paddle_shape.getSize().y / 2.f;
 			float time = (ballCenter - EnemyCenter) / ballDir.y;
 
-			//float futurePos = ballPos.y + ballDir.y * 4;
-			float futurePos = ballPos.y + ballDir.y * time;
-			if (futurePos < 0) {
-				futurePos = futurePos - game->getBallSize().y;
-			}
-			else {
-				futurePos = futurePos + game->getBallSize().y;
-			}
+			float futurePos = ballPos.y + ballDir.y * 4;
+			//float futurePos = ballPos.y + ballDir.y * time;
+		
 			float moveTo = futurePos - EnemyCenter;
-			if (std::abs(moveTo) > 20.f) {
+			if (std::abs(moveTo) > 25.f) {
 				if (moveTo < 0) {
 					direction.y = -speed;
 

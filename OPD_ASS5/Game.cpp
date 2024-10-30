@@ -67,7 +67,13 @@ void Game::InitWindow()
 
 	
 
-	this->window = new sf::RenderWindow(this->videoMode, "My first game", sf::Style::Titlebar | sf::Style::Close);
+	if (!fullscreen) {
+		this->window = new sf::RenderWindow(this->videoMode, "My first game", sf::Style::Titlebar | sf::Style::Close);
+
+	}
+	if (fullscreen) {
+		this->window = new sf::RenderWindow(this->videoMode, "My first game", sf::Style::Titlebar | sf::Style::Fullscreen);
+	}
 	this->window->setFramerateLimit(fps);
 }
 
@@ -225,7 +231,7 @@ void Game::checkCollision()
 {
 
 	if (ball->shape.getGlobalBounds().intersects(enemyPaddle->paddle_shape.getGlobalBounds()) && lastTouch) {
-		//ballSpeed *= 1.05f;
+		ballSpeed *= 1.05f;
 		float paddleCentre = enemyPaddle->paddle_shape.getPosition().y + enemyPaddle->paddle_shape.getSize().y / 2.f;
 		float ballCentre = ball->shape.getPosition().y + ball->shape.getSize().y / 2.f;
 
@@ -238,7 +244,7 @@ void Game::checkCollision()
 	}
 
 	if (ball->shape.getGlobalBounds().intersects(playerPaddle->paddle_shape.getGlobalBounds()) && !lastTouch) {
-		//ballSpeed *= 1.05f;
+		ballSpeed *= 1.05f;
 		float paddleCentre = playerPaddle->paddle_shape.getPosition().y + playerPaddle->paddle_shape.getSize().y / 2.f;
 		float ballCentre = ball->shape.getPosition().y + ball->shape.getSize().y / 2.f;
 
@@ -264,7 +270,7 @@ void Game::checkCollision()
 
 void Game::win()
 {
-	if (ball->shape.getPosition().x < -5) {
+	if (ball->shape.getPosition().x < -35) {
 		points.y++;  // Enemy player score
 		std::cout << "Points: " << points.x << " : " << points.y << std::endl;
 		if (points.y == pointsTOwin) {
@@ -273,11 +279,11 @@ void Game::win()
 		}
 		resetBall(1);
 	}
-	if (ball->shape.getPosition().x > videoMode.width + 5) {
+	if (ball->shape.getPosition().x > videoMode.width + 35) {
 		points.x++;  // Player score
 		std::cout << "Points: " << points.x << " : " << points.y << std::endl;
 		if (points.x == pointsTOwin) {
-			end = true;
+			end = true; 
 			play = false;
 		}
 		resetBall(0);
@@ -332,7 +338,13 @@ void Game::pollEvents() {
 						}
                         break;
                     case sf::Keyboard::Escape:
-                        window->close();
+						if (!play && !end) {
+							window->close();
+							break;
+						}
+						endGameMenu();
+						play = false;
+						end = false;
                         break;
                 }
                 break;
@@ -385,6 +397,7 @@ void Game::endGameMenu()
 		end = false;
 		play = false;
 		start = false;
+		twoPlayers = false;
 		InitWindow();
 		InitMenu();
 		InitPaddle();
