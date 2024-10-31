@@ -28,11 +28,14 @@ private:
 
 	float paddleSpeed;
 	float ballSpeed;
+	float defaulBallSpeed;
 	float resetBallSpeedX;
 	float resetBallSpeedY;
 	sf::Vector2i points; //x is player; y is enemy;
+	
 	bool play;
 	bool start;
+	bool pause = false;
 	bool end = false;
 	bool fullscreen = false;
 	bool twoPlayers = false;
@@ -63,20 +66,29 @@ private:
 	Ball* ball;
 	Ball* debugBall;
 	MainMenu* Menu;
+
 	sf::Font font;
 	sf::Text score[2];
+	sf::Text pauseText;
 
+	sf::SoundBuffer ballHit_buffer;
+	sf::SoundBuffer ballReset_buffer;
+	sf::SoundBuffer gameOver_buffer;
 
+	sf::Sound ballHit_sound;
+	sf::Sound ballReset_sound;
+	sf::Sound gameOver_sound;
+	
 	//private func
 	void initVariables();
 	void InitWindow();
 	void InitEnemies();
 	void InitPaddle();
 	void InitBall();
-
-	void InitScore();
+	void InitText();
 	void InitMenu();
-	void restart(Game* object);
+	void InitSounds();
+
 
 public:
 

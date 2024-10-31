@@ -12,37 +12,31 @@ void EnemyPaddle::move_paddle(int param, int dir)
 
 		if (game->getBallPositoin().x >= game->getVideoMode().width / 5.f) {
 
+			int kef = speed == 2 ? 5 : 10;
+			
 
 			sf::Vector2f ballPos = game->getBallPositoin();
 			sf::Vector2f ballDir = game->getBallDirection();
-
-			float ballCenter = (game->getBallPositoin().y + game->getBallSize().y / 2.f);
 			float EnemyCenter = paddle_shape.getPosition().y + paddle_shape.getSize().y / 2.f;
-			float time = (ballCenter - EnemyCenter) / ballDir.y;
+			float ballXPercent = (100.0f - (ballPos.x / game->getVideoMode().width) * 90.0f) / kef;
 
-			//float futurePos = ballPos.y + ballDir.y * time;
-
-			float ballXPercent = (100.0f - (ballPos.x / game->getVideoMode().height) * 90.0f) / 5;
-
-			if (ballXPercent < 3) {
-				ballXPercent = 3;
+			if (ballXPercent < 1) {
+				ballXPercent = 1;
 			}
 
 			std::cout << ballXPercent << std::endl;
-
 			float futurePos = ballPos.y + ballDir.y * game->getBallSize().x * ballXPercent  / game->getBallDirection().x;;
 
-			if (futurePos <= 0) {
-				futurePos = -futurePos * 2;
+			if (futurePos < 0 ) {
+				futurePos = -futurePos * ballXPercent;
 			}
-
-			/*if (game->getBallPositoin().y  + futurePos < 0) futurePos = -futurePos;
-			if (game->getBallPositoin().y + futurePos > game->getVideoMode().height) futurePos =  - futurePos;*/
-
+			if (futurePos > game->getVideoMode().height) {
+				futurePos = futurePos / ballXPercent;
+			}
 			game->setBallPos(game->getBallPositoin().x, futurePos);
 			
 			float moveTo = futurePos - EnemyCenter;
-			if (std::abs(moveTo) > 5.f) {
+			if (std::abs(moveTo) > 25.f) {
 				if (moveTo < 0) {
 					direction.y = -speed;
 
