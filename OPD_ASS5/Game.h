@@ -25,12 +25,6 @@ class Game
 private:
 
 	//variables
-
-	float paddleSpeed;
-	float ballSpeed;
-	float defaulBallSpeed;
-	float resetBallSpeedX;
-	float resetBallSpeedY;
 	sf::Vector2i points; //x is player; y is enemy;
 	
 	bool play;
@@ -40,11 +34,7 @@ private:
 	bool fullscreen = false;
 	bool twoPlayers = false;
 
-	int pointsTOwin = 3;
-
 	int fps = 60;
-
-	
 
 	//collision
 	bool lastTouch;
@@ -55,9 +45,13 @@ private:
 	sf::VideoMode videoMode;
 
 	//Game logic
-	float enemySpawnTimer;
-	float enemySpawnTimerMax;
-	int maxEnemies;
+	float paddleSpeed;
+	float ballSpeed;
+	float defaulBallSpeed;
+	float resetBallSpeedX;
+	float resetBallSpeedY;
+
+	int pointsTOwin = 3;
 
 
 	// game objects
@@ -104,6 +98,7 @@ public:
 	sf::Vector2f getBallDirection();
 	sf::RenderWindow& getWindow();
 	sf::Vector2i getScore();
+	bool getFullscrenMode();
 	Ball& getBall();
 	void setBallPos(float a, float b);
 

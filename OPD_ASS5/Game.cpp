@@ -252,6 +252,11 @@ sf::Vector2i Game::getScore()
 	return points;
 }
 
+bool Game::getFullscrenMode()
+{
+	return fullscreen;
+}
+
 Ball& Game::getBall()
 {
 	return *debugBall;
@@ -299,7 +304,10 @@ void Game::checkCollision()
 
 	if (ball->shape.getPosition().y <= 0 || ball->shape.getPosition().y + ball->shape.getSize().y >= videoMode.height) {
 		ball->direction.y = -ball->direction.y;
-		ballHit_sound.play();
+		if (points.x != pointsTOwin && points.y != pointsTOwin) {
+			ballHit_sound.play();
+
+		}
 
 	}
 
@@ -548,9 +556,9 @@ void Game::update()
 	if (!pause) {
 		if (play) {
 			this->updateEnemies();
+			this->win();
 			this->updateBall();
 			this->updatePaddle();
-			this->win();
 		}
 		this->updateScore();
 	}
@@ -578,7 +586,7 @@ void Game::render()
 		this->renderEnemies();
 		this->window->draw(playerPaddle->paddle_shape);
 		this->window->draw(ball->shape);
-		//this->window->draw(debugBall->shape);
+		this->window->draw(debugBall->shape);
 		for (auto& h : score) {
 			this->window->draw(h);
 		}
@@ -594,14 +602,11 @@ void Game::render()
 		for (auto& h : score) {
 			this->window->draw(h);
 		}
-
 		Menu->drawEnd(*window);
 	}
 	else {
 		Menu->draw(*window);  
 	}
-
-
 	this->window->display();
 }
 

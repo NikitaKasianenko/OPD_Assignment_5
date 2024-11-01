@@ -11,8 +11,7 @@ void EnemyPaddle::move_paddle(int param, int dir)
 	if (param == 0) {
 
 		if (game->getBallPositoin().x >= game->getVideoMode().width / 5.f) {
-
-			int kef = speed == 2 ? 5 : 10;
+			int kef = game->getFullscrenMode() ? 5 : 10;
 			
 
 			sf::Vector2f ballPos = game->getBallPositoin();
