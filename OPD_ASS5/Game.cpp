@@ -55,33 +55,22 @@ void Game::InitWindow()
 	if (this->window) {
 		delete this->window;
 	}
-	
 
 	if (!fullscreen) {
 		this->videoMode.height = 728;
 		this->videoMode.width = 1024;
-	}
-
-	if (fullscreen) {
-		this->videoMode = videoMode.getDesktopMode();
-	}
-
-	
-
-	if (!fullscreen) {
 		this->window = new sf::RenderWindow(this->videoMode, "My first game", sf::Style::Titlebar | sf::Style::Close);
 
 	}
 	if (fullscreen) {
+		this->videoMode = videoMode.getDesktopMode();
 		this->window = new sf::RenderWindow(this->videoMode, "My first game", sf::Style::Titlebar | sf::Style::Fullscreen);
 	}
 	this->window->setFramerateLimit(fps);
 }
 
 void Game::InitEnemies()
-
 {
-
 	if (this->enemyPaddle) {
 		delete this->enemyPaddle;
 	}
@@ -136,9 +125,6 @@ void Game::InitBall()
 	this->debugBall->shape.setFillColor(sf::Color::Transparent);
 	this->debugBall->shape.setOutlineColor(sf::Color::Red);
 	this->debugBall->shape.setOutlineThickness(5.f);
-
-
-
 
 }
 
@@ -285,7 +271,6 @@ void Game::checkCollision()
 		lastTouch = false;
 		ballHit_sound.play();
 
-
 	}
 
 	if (ball->shape.getGlobalBounds().intersects(playerPaddle->paddle_shape.getGlobalBounds()) && !lastTouch) {
@@ -304,13 +289,8 @@ void Game::checkCollision()
 
 	if (ball->shape.getPosition().y <= 0 || ball->shape.getPosition().y + ball->shape.getSize().y >= videoMode.height) {
 		ball->direction.y = -ball->direction.y;
-		if (points.x != pointsTOwin && points.y != pointsTOwin) {
-			ballHit_sound.play();
-
-		}
-
+		ballHit_sound.play();
 	}
-
 
 }
 
@@ -360,7 +340,9 @@ void Game::resetBall(int param)
 
 	ballSpeed = defaulBallSpeed;
 
-	ballReset_sound.play();
+	if (points.x != pointsTOwin && points.y != pointsTOwin) {
+		ballReset_sound.play();
+	}
 
 }
 
